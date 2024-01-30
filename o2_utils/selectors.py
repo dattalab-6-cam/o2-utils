@@ -1,7 +1,6 @@
 import os
-from glob import glob
 import warnings
-import pdb
+from glob import glob
 
 
 class GreaterThanExpectedMatchingFileError(Exception):
@@ -46,7 +45,7 @@ def find_files_from_pattern(path, pattern, exclude_patterns=None, n_expected=1, 
     """
     if exclude_patterns is None:
         exclude_patterns = []
-    elif type(exclude_patterns) is str:
+    elif isinstance(exclude_patterns, str):
         exclude_patterns = [exclude_patterns]
 
     if "*" not in pattern:
