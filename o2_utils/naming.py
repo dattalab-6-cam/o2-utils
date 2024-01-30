@@ -1,4 +1,4 @@
-
+import os
 
 def to_snake_case(string):
     """Convert a string to snake case (lowercase, and underscores instead of spaces or dashes)
