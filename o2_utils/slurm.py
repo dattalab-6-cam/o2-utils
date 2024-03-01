@@ -37,7 +37,7 @@ def parse_sacct_line(line, line_type):
             'CPUTimeRaw': parts[5], 
             'N_CPUs': cpu_regexp.search(parts[6]).groups()[0],
             'Mem_Req': mem_regexp.search(parts[6]).groups()[0],
-            'Mem_Used': parts[7],
+            'Mem_Used': parts[7] if ((parts[1] != "RUNNING") and (parts[1] != "PENDING")) else np.nan,
         }
     elif line_type == "job":
         job_data = {
@@ -60,6 +60,19 @@ def get_job_info(jobid):
     -------
     batch_info : dict
         Dictionary containing information about the batch job
+
+    Example output:
+        {'JobID': '32828121',
+        'Status': 'COMPLETED',
+        'NodeList': 'compute-g-17-163',
+        'StartTime': '2024-02-23T23:27:34',
+        'ElapsedTime': '00:45:40',
+        'CPUTimeRaw': '68.85',
+        'N_CPUs': '2',
+        'Mem_Req': '4G',
+        'Mem_Used': '2.79G',
+        'Partition': 'gpu_quad',
+        'RequestedTime': '01:16:00'}
     """
     info_dict = {}
     info_dict['jobid'] = jobid
@@ -69,7 +82,7 @@ def get_job_info(jobid):
     
     def _job_filt(line):
         exclude_terms = ["extern", "batch", "interactive", "RUNNING"]
-        return all(term not in l for term in exclude_terms)
+        return all(term not in line for term in exclude_terms)
 
     # Use sacct to get information about the job
     cmd = f"O2sacct {jobid}"

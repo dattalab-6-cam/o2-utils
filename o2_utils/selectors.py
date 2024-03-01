@@ -12,7 +12,7 @@ class NoMatchingFilesError(Exception):
         Exception.__init__(self,*args,**kwargs)
 
 
-def find_files_from_pattern(path, pattern, exclude_patterns=None, n_expected=1, error_behav='raise'):
+def find_files_from_pattern(path, pattern, exclude_patterns=None, n_expected=1, error_behav='raise', verbose=False):
     """Find a given number of files on a given path, matching a particular glob pattern. 
     Raises an error if wrong number of files match, unless error_behav='pass'.
 
@@ -20,7 +20,7 @@ def find_files_from_pattern(path, pattern, exclude_patterns=None, n_expected=1, 
     ----------
     path : str
         Path to check
-    
+
     pattern : str
         Passed to glob.glob
 
@@ -32,6 +32,9 @@ def find_files_from_pattern(path, pattern, exclude_patterns=None, n_expected=1, 
 
     error_behav : str, optional
         If 'raise', raises errors; if 'pass', return None for no files, or the whole list for multiple (default: "raise").
+
+    verbose :  bool, optional
+        If True, print more verbose warnings.
 
     Raises
     ------
@@ -57,7 +60,7 @@ def find_files_from_pattern(path, pattern, exclude_patterns=None, n_expected=1, 
 
     # Raise error if no files found
     if len(potential_file_list) == 0:
-        if error_behav=='raise':
+        if error_behav == 'raise':
             raise NoMatchingFilesError(f"Found zero files matching {path}/{pattern}!")
         else:
             return None
@@ -71,14 +74,16 @@ def find_files_from_pattern(path, pattern, exclude_patterns=None, n_expected=1, 
     # If now no files, they were removed via pattern, so stop
     if len(potential_file_list) == 0:
         warnings.warn(f"No files remaining in {path} after exclusion.")
-        if error_behav=='raise':
+        if error_behav == 'raise':
             raise NoMatchingFilesError(f"Found zero files matching {path}/{pattern}!")
         else:
             return None
 
     # Raise error if still more than one matching file
     if len(potential_file_list) > n_expected:
-        if error_behav=='raise':
+        if error_behav == 'raise':
+            if verbose:
+                print("Found files:", potential_file_list)
             raise GreaterThanExpectedMatchingFileError(
                 f"Found {len(potential_file_list)} files matching {path}/{pattern} but expected {n_expected}!"
             )
