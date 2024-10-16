@@ -28,7 +28,8 @@ def find_files_from_pattern(path, pattern, exclude_patterns=None, n_expected=1, 
         If any of these patterns is in found file names, exclude them
 
     n_expected : int, optional
-        Number of files expected to match pattern (default: 1)
+        Number of files expected to match pattern (default: 1).
+        Set to -1 to allow any number of files.
 
     error_behav : str, optional
         If 'raise', raises errors; if 'pass', return None for no files, or the whole list for multiple (default: "raise").
@@ -80,7 +81,7 @@ def find_files_from_pattern(path, pattern, exclude_patterns=None, n_expected=1, 
             return None
 
     # Raise error if still more than one matching file
-    if len(potential_file_list) > n_expected:
+    if len(potential_file_list) > n_expected and (n_expected != -1):
         if error_behav == 'raise':
             if verbose:
                 print("Found files:", potential_file_list)
@@ -91,6 +92,7 @@ def find_files_from_pattern(path, pattern, exclude_patterns=None, n_expected=1, 
             return potential_file_list
 
     if n_expected == 1:
+        assert len(potential_file_list) == 1
         return potential_file_list[0]
     else:
         return potential_file_list
